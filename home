@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PlannerDesk — Ticketing + Planner + Chat + Voice</title>
+  <meta name="description" content="PlannerDesk: all-in-one Ticketing + Planner + Chat + Voice per team di assistenza." />
+  <style>
+    :root{
+      --bg: #0b1220;
+      --bg2:#0e1830;
+      --card:#0f1b33;
+      --text:#eaf0ff;
+      --muted:#b9c4e6;
+      --line: rgba(255,255,255,.10);
+      --accent:#62e6a5;
+      --accent2:#6aa8ff;
+      --shadow: 0 12px 40px rgba(0,0,0,.35);
+      --radius: 18px;
+      --max: 1120px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background:
+        radial-gradient(1000px 600px at 12% 10%, rgba(98,230,165,.18), transparent 60%),
+        radial-gradient(900px 600px at 85% 15%, rgba(106,168,255,.18), transparent 60%),
+        radial-gradient(900px 700px at 40% 90%, rgba(255,255,255,.06), transparent 55%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      line-height:1.5;
+    }
+
+    a{color:inherit}
+    .wrap{max-width:var(--max); margin:0 auto; padding: 28px 18px 60px;}
+
+    /* Topbar */
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:14px; padding: 10px 0 22px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px; text-decoration:none;
+    }
+    .logo{
+      width:36px; height:36px; border-radius:12px;
+      background:
+        radial-gradient(20px 20px at 30% 30%, rgba(255,255,255,.35), transparent 60%),
+        linear-gradient(135deg, rgba(98,230,165,.95), rgba(106,168,255,.95));
+      box-shadow: 0 10px 30px rgba(98,230,165,.18);
+    }
+    .brand strong{font-size:16px; letter-spacing:.2px}
+    .nav{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+    }
+    .chip{
+      font-size:12px; color:var(--muted);
+      border:1px solid var(--line);
+      padding:8px 10px; border-radius:999px;
+      background: rgba(255,255,255,.03);
+      text-decoration:none;
+      transition: transform .15s ease, border-color .15s ease;
+    }
+    .chip:hover{transform:translateY(-1px); border-color: rgba(255,255,255,.22)}
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      gap:10px; text-decoration:none;
+      padding:12px 14px; border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      font-weight:700; font-size:14px;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease;
+      white-space:nowrap;
+    }
+    .btn:hover{transform:translateY(-1px); background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.22)}
+    .btn.primary{
+      background: linear-gradient(135deg, rgba(98,230,165,.95), rgba(106,168,255,.85));
+      color:#07101f;
+      border-color: transparent;
+      box-shadow: 0 14px 34px rgba(98,230,165,.20);
+    }
+    .btn.primary:hover{background: linear-gradient(135deg, rgba(98,230,165,1), rgba(106,168,255,.95))}
+
+    /* Hero */
+    .hero{
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap:22px;
+      align-items:stretch;
+      padding: 18px 0 10px;
+    }
+    @media (max-width: 920px){
+      .hero{grid-template-columns: 1fr; }
+    }
+    .heroCard{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      border-radius: var(--radius);
+      padding: 26px;
+      box-shadow: var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+    .heroCard:before{
+      content:"";
+      position:absolute; inset:-2px;
+      background:
+        radial-gradient(700px 220px at 20% 0%, rgba(98,230,165,.18), transparent 60%),
+        radial-gradient(700px 220px at 80% 0%, rgba(106,168,255,.18), transparent 60%);
+      pointer-events:none;
+    }
+    .heroCard > *{position:relative}
+    .kicker{
+      display:inline-flex; align-items:center; gap:10px;
+      font-size:12px; color:var(--muted);
+      padding:8px 10px; border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+    }
+    .dot{
+      width:8px; height:8px; border-radius:99px;
+      background: var(--accent);
+      box-shadow: 0 0 0 6px rgba(98,230,165,.14);
+    }
+    h1{
+      margin:14px 0 10px;
+      font-size: 40px;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+    }
+    @media (max-width: 520px){
+      h1{font-size: 32px;}
+    }
+    .sub{
+      color:var(--muted);
+      font-size:16px;
+      margin: 0 0 16px;
+      max-width: 62ch;
+    }
+    .ctaRow{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top: 16px;}
+    .micro{margin-top:12px; color:var(--muted); font-size:12px}
+    .micro strong{color:var(--text)}
+    .heroSide{
+      display:flex; flex-direction:column; gap:12px;
+    }
+    .miniCard{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+    .miniTitle{
+      font-weight:800;
+      margin:0 0 6px;
+      font-size:14px;
+    }
+    .miniText{margin:0; color:var(--muted); font-size:13px}
+    .badges{display:flex; gap:8px; flex-wrap:wrap; margin-top: 12px;}
+    .badge{
+      font-size:12px; color:var(--text);
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.04);
+      padding:7px 10px; border-radius:999px;
+    }
+
+    /* Sections */
+    section{padding: 22px 0;}
+    .sectionHead{
+      display:flex; align-items:flex-end; justify-content:space-between; gap:12px;
+      margin-bottom: 12px;
+    }
+    h2{
+      margin:0;
+      font-size: 22px;
+      letter-spacing: -0.2px;
+    }
+    .hint{margin:0; color:var(--muted); font-size:13px}
+
+    .grid2{display:grid; grid-template-columns: 1fr 1fr; gap:14px;}
+    @media (max-width: 760px){ .grid2{grid-template-columns:1fr;}}
+
+    .card{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+    .card p{margin:8px 0 0; color:var(--muted)}
+    .card strong{color:var(--text)}
+    .divider{height:1px; background: var(--line); margin: 12px 0 0;}
+
+    /* Steps */
+    .steps{display:grid; grid-template-columns: repeat(3, 1fr); gap:14px;}
+    @media (max-width: 980px){ .steps{grid-template-columns:1fr;} }
+    .stepNum{
+      width:30px; height:30px; border-radius:999px;
+      display:inline-flex; align-items:center; justify-content:center;
+      font-weight:900; font-size:13px;
+      background: rgba(98,230,165,.16);
+      border:1px solid rgba(98,230,165,.30);
+      color: var(--text);
+    }
+    .stepTitle{margin:10px 0 6px; font-size:16px; font-weight:900}
+    .list{margin:10px 0 0; padding-left: 18px; color:var(--muted)}
+    .list li{margin:6px 0}
+
+    /* Features */
+    .features{display:grid; grid-template-columns: repeat(3, 1fr); gap:14px;}
+    @media (max-width: 980px){ .features{grid-template-columns:1fr;} }
+    .fTitle{display:flex; align-items:center; gap:10px; font-weight:900; margin:0}
+    .icon{
+      width:28px; height:28px; border-radius:10px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.04);
+      display:inline-flex; align-items:center; justify-content:center;
+      font-size:14px;
+    }
+    .muted{color:var(--muted)}
+
+    /* Video */
+    .videoWrap{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      display:grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap: 14px;
+      align-items:stretch;
+    }
+    @media (max-width: 900px){ .videoWrap{grid-template-columns:1fr;} }
+
+    .videoBox{
+      border-radius: 14px;
+      border:1px dashed rgba(255,255,255,.20);
+      background: rgba(0,0,0,.18);
+      min-height: 260px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color: var(--muted);
+      text-align:center;
+      padding: 18px;
+    }
+    .videoSide{
+      display:flex; flex-direction:column; gap:10px;
+    }
+
+    /* FAQ */
+    details{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      border-radius: 14px;
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
+    }
+    details + details{margin-top:10px}
+    summary{
+      cursor:pointer;
+      font-weight:800;
+      list-style:none;
+    }
+    summary::-webkit-details-marker{display:none}
+    details p{color:var(--muted); margin:10px 0 0}
+
+    /* Footer */
+    footer{
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top:1px solid var(--line);
+      color:var(--muted);
+      font-size:12px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <a class="brand" href="#top">
+        <div class="logo" aria-hidden="true"></div>
+        <strong>PlannerDesk</strong>
+      </a>
+      <div class="nav">
+        <a class="chip" href="#features">Feature</a>
+        <a class="chip" href="#how">Come funziona</a>
+        <a class="chip" href="#video">Video</a>
+        <a class="chip" href="#faq">FAQ</a>
+        <a class="btn" href="mailto:arditkoci@live.it?subject=Demo%20Request%20-%20PlannerDesk">Request a Demo</a>
+      </div>
+    </div>
+
+    <div id="top" class="hero">
+      <div class="heroCard">
+        <div class="kicker"><span class="dot"></span> Ticketing • Planner • Chat • Voice</div>
+        <h1>All-in-one Ticketing + Planner + Chat + Voice — per team di assistenza che vogliono chiudere più interventi, senza caos.</h1>
+        <p class="sub">
+          Centralizza richieste, pianifica tecnici, chatta col cliente e trasforma le chiamate in ticket con riassunti automatici.
+          Tutto in un unico flusso operativo.
+        </p>
+        <div class="ctaRow">
+          <a class="btn primary" href="mailto:arditkoci@live.it?subject=Demo%20Request%20-%20PlannerDesk%20Service%20Ops">
+            Request a Demo
+          </a>
+          <a class="btn" href="#video">Watch 3-min Walkthrough</a>
+        </div>
+        <div class="micro">
+          Demo disponibile con dati fittizi (<strong>Lorem Ipsum</strong>) — nessun dato reale dei clienti.
+        </div>
+      </div>
+
+      <div class="heroSide">
+        <div class="miniCard">
+          <p class="miniTitle">Per chi</p>
+          <p class="miniText">Assistenza tecnica, manutenzione, field service. Team con tecnici on-site e coordinamento interno.</p>
+          <div class="badges">
+            <span class="badge">Drag & Drop Planner</span>
+            <span class="badge">Customer Chat</span>
+            <span class="badge">Voice Summary</span>
+            <span class="badge">Survey Automation</span>
+          </div>
+        </div>
+        <div class="miniCard">
+          <p class="miniTitle">Risultato</p>
+          <p class="miniText">Meno tempo speso a rincorrere info, più interventi chiusi con stato sempre chiaro per tutti.</p>
+          <div class="divider"></div>
+          <p class="miniText" style="margin-top:12px">
+            <span class="muted">Demo:</span> accesso su richiesta · setup guidato · opzione self-hosted
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <section>
+      <div class="sectionHead">
+        <h2>Il problema e la soluzione</h2>
+        <p class="hint">Da “ticket sparsi” a flusso unico, end-to-end.</p>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <strong>Il problema</strong>
+          <p>Ticket sparsi, pianificazioni su mille strumenti, chat fuori controllo e chiamate non tracciate.</p>
+        </div>
+        <div class="card">
+          <strong>La soluzione</strong>
+          <p>Un’unica piattaforma che collega <strong>ticket → attività pianificata → aggiornamenti cliente → chiusura → follow-up</strong>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="how">
+      <div class="sectionHead">
+        <h2>Come funziona</h2>
+        <p class="hint">Tre step, un unico workflow operativo.</p>
+      </div>
+      <div class="steps">
+        <div class="card">
+          <div class="stepNum">1</div>
+          <div class="stepTitle">Intake</div>
+          <ul class="list">
+            <li>Crea ticket da form, email o operatore</li>
+            <li>Priorità, SLA, assegnazioni, allegati</li>
+            <li>Checklist e note operative</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="stepNum">2</div>
+          <div class="stepTitle">Pianificazione</div>
+          <ul class="list">
+            <li>Drag & drop nel planner settimanale per tecnico</li>
+            <li>Stati, note interne, attività manuali</li>
+            <li>Multi-attività nello stesso slot</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="stepNum">3</div>
+          <div class="stepTitle">Comunicazione e chiusura</div>
+          <ul class="list">
+            <li>Chat col cliente + notifiche</li>
+            <li>Chiusura automatica attività passate</li>
+            <li>Invio survey/feedback post-intervento</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="features">
+      <div class="sectionHead">
+        <h2>Feature principali</h2>
+        <p class="hint">Pensato per operations reali, non solo helpdesk.</p>
+      </div>
+
+      <div class="features">
+        <div class="card">
+          <p class="fTitle"><span class="icon">🎫</span>Ticketing operativo</p>
+          <ul class="list">
+            <li>Kanban/board per stati, filtri, priorità</li>
+            <li>Allegati (foto/PDF/video), checklist, note</li>
+            <li>Collegamento ticket ↔ richiesta ↔ attività</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p class="fTitle"><span class="icon">🗓️</span>Planner per tecnici</p>
+          <ul class="list">
+            <li>Planner settimanale drag & drop</li>
+            <li>Multi-attività nello stesso slot, ordinamento e stati</li>
+            <li>Settimana/giorno corrente evidenziati, mobile-friendly</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p class="fTitle"><span class="icon">💬</span>Chat cliente</p>
+          <ul class="list">
+            <li>Thread per richiesta/intervento</li>
+            <li>Link pubblico con token (controllato)</li>
+            <li>Notifiche automatiche al cambio stato</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p class="fTitle"><span class="icon">📞</span>Voice workflow</p>
+          <ul class="list">
+            <li>Collega chiamate a ticket</li>
+            <li>Riassunto automatico della chiamata</li>
+            <li>Metadati (durata, esito, ecc.)</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p class="fTitle"><span class="icon">⚙️</span>Automazioni</p>
+          <ul class="list">
+            <li>Auto-complete attività passate confermate</li>
+            <li>Survey/feedback post-intervento</li>
+            <li>Email automatiche su cambi di stato/tecnico</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p class="fTitle"><span class="icon">🔌</span>Integrazioni e deploy</p>
+          <ul class="list">
+            <li>API ready per CRM/ERP</li>
+            <li>Self-hosted o cloud</li>
+            <li>Configurabile per domini e policy aziendali</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="sectionHead">
+        <h2>Per chi è</h2>
+        <p class="hint">Use case chiari, senza ambiguità.</p>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <strong>Perfetto per</strong>
+          <ul class="list">
+            <li>Assistenza tecnica / manutenzione / field service</li>
+            <li>Team con tecnici on-site e coordinamento interno</li>
+            <li>Aziende che vogliono un flusso unico dal ticket alla pianificazione</li>
+          </ul>
+        </div>
+        <div class="card">
+          <strong>Non è per te se</strong>
+          <ul class="list">
+            <li>Cerchi solo un helpdesk base senza scheduling</li>
+            <li>Vuoi un call center tool puro senza operations</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="video">
+      <div class="sectionHead">
+        <h2>Walkthrough</h2>
+        <p class="hint">Sostituisci il box con il tuo video Loom/YouTube.</p>
+      </div>
+
+      <div class="videoWrap">
+        <div class="videoBox">
+          <div>
+            <div style="font-weight:900; font-size:16px; color:var(--text); margin-bottom:8px;">Video placeholder</div>
+            <div class="muted">Incolla qui un embed Loom/YouTube, oppure metti un link sul pulsante a destra.</div>
+            <div class="muted" style="margin-top:10px; font-size:12px;">Dati demo: Lorem Ipsum · Nessun dato reale</div>
+          </div>
+        </div>
+        <div class="videoSide">
+          <div class="card" style="height:100%">
+            <strong>Nel video mostro</strong>
+            <ul class="list">
+              <li>Creazione ticket (Lorem)</li>
+              <li>Pianificazione nel planner</li>
+              <li>Chat col cliente</li>
+              <li>Chiusura + survey inviata</li>
+              <li>Voice summary (opzionale)</li>
+            </ul>
+            <div class="ctaRow" style="margin-top:14px;">
+              <a class="btn primary" href="mailto:arditkoci@live.it?subject=Demo%20Request%20-%20PlannerDesk%20Walkthrough">
+                Richiedi accesso demo
+              </a>
+              <a class="btn" href="#top">Torna su</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="sectionHead">
+        <h2>Sicurezza e controllo</h2>
+        <p class="hint">Breve e buyer-friendly.</p>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <strong>Accesso e ruoli</strong>
+          <p>Ruoli (admin/operator/tecnico) e flussi separati per interno e cliente.</p>
+        </div>
+        <div class="card">
+          <strong>Token e audit</strong>
+          <p>Token per area cliente con scadenza/validazione e storico modifiche.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq">
+      <div class="sectionHead">
+        <h2>FAQ</h2>
+        <p class="hint">Risposte rapide alle obiezioni più comuni.</p>
+      </div>
+
+      <details>
+        <summary>Serve un sito pubblico?</summary>
+        <p>No. La piattaforma è pensata per funzionare dietro login; demo su richiesta.</p>
+      </details>
+      <details>
+        <summary>È multi-tenant?</summary>
+        <p>Può esserlo (o configurabile). Dipende dal setup scelto.</p>
+      </details>
+      <details>
+        <summary>Quanto tempo per il go-live?</summary>
+        <p>Da pochi giorni a poche settimane, a seconda di migrazione e integrazioni.</p>
+      </details>
+      <details>
+        <summary>Posso usarlo self-hosted?</summary>
+        <p>Sì, disponibile anche installazione su infrastruttura propria.</p>
+      </details>
+    </section>
+
+    <section>
+      <div class="sectionHead">
+        <h2>Vuoi vederlo in azione?</h2>
+        <p class="hint">Scrivimi e ti mando accesso demo o call veloce.</p>
+      </div>
+      <div class="card">
+        <div class="ctaRow">
+          <a class="btn primary" href="mailto:arditkoci@live.it?subject=Demo%20Request%20-%20PlannerDesk%20Service%20Ops%20Platform">
+            Request a Demo
+          </a>
+          <a class="btn" href="mailto:arditkoci@live.it?subject=Book%20a%20Call%20-%20PlannerDesk">
+            Book a call
+          </a>
+        </div>
+        <p class="muted" style="margin-top:12px; font-size:13px;">
+          Se preferisci, mandami 2 righe sul tuo flusso e ti preparo una demo su misura.
+        </p>
+      </div>
+    </section>
+
+    <footer>
+      <div>© 2025 — <strong style="color:var(--text)">PlannerDesk</strong></div>
+      <div>Not affiliated with Twilio / OpenAI</div>
+    </footer>
+  </div>
+</body>
+</html>
